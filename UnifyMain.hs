@@ -6,15 +6,22 @@ module UnifyMain(main) where
 
 import UnifyParser
 import Unify
+import Data.Maybe
+
+extractTerm :: (Term, [Char]) -> Term
+extractTerm (a, b) = a
 
 
 -- Main function
 main :: IO()
 main =	do
 			putStrLn "Please enter term one:"
-			x <- getLine
+			t1 <- getLine
 			putStrLn "Please enter term two:"
-			y <- getLine
+			t2 <- getLine
 			
-			putStrLn (unify (term x) (term y))
+			let x = extractTerm(fromJust(term t1))
+			let y = extractTerm(fromJust(term t2))
+			
+			putStrLn (show(unify x y Failure))
 			
