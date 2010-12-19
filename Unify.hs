@@ -10,7 +10,33 @@ import Definitions
 
 -- Deals with Failure and two equal terms
 unify :: Term -> Term -> MGU -> MGU
-unify x y theta = Failure
+unify _ _ Failure = Failure
+unify x y theta
+  | x == y = theta
+unify x@(Var _) y theta = unifyvariable x y theta
+unify x y@(Var _) theta = unifyvariable y x theta
+unify (Fun x xs) (Fun y ys) theta = unifylist xs ys $ unify (Cst x) (Cst y) theta -- unify xs ys ( unify x y theta )
+--unify (x:xs) (y:ys) theta = unify xs ys $ unify x y theta -- unify xs ys ( unify x y theta )
+unify _ _ _ = Failure
+
+unifylist :: [Term] -> [Term] -> MGU -> MGU
+unifylist [] [] theta = theta
+unifylist (x:xs) (y:ys) theta = unifylist xs ys $ unify x y theta 
+unifylist _ _ _ = Failure
+
+--               var       x     theta
+unifyvariable :: Term -> Term -> MGU -> MGU
+unifyvariable _ _ Failure = Failure
+unifyvariable var@(Var _) x theta@(List subs) =
+
+getvariablefromsubstitutionlist :: Term -> MGU -> MGU
+getvariablefromsubstitutionlist var (List subs) = (List [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var])
+
+extractsecondterm :: Substitution -> Term
+extractsecondterm (Subst term1 term2) = term2
+
+--(\x (List subs) = [x | x <- subs, x == term1])
+--(\(Subst term1 term2) -> term2)
 
 
 {--

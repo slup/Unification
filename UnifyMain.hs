@@ -23,5 +23,5 @@ main =	do
 			let x = extractTerm(fromJust(term t1))
 			let y = extractTerm(fromJust(term t2))
 			
-			putStrLn (show(unify x y Failure))
+			putStrLn (show(unify x y (List [])))
 			
