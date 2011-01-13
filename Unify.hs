@@ -27,13 +27,21 @@ unifyargslist _ _ _ = Failure
 --               var       x     theta
 unifyvariable :: Term -> Term -> MGU -> MGU
 unifyvariable _ _ Failure = Failure
-unifyvariable var@(Var _) x theta@(List subs) = 
+unifyvariable var@(Var _) x theta@(List subs)
+ | [] /= getvariablefromsubstitutionlist var theta = unify (extractsecondterm (head (getvariablefromsubstitutionlist var theta))) x theta
+ | [] /= getvariablefromsubstitutionlist x theta = unify var (extractsecondterm (head (getvariablefromsubstitutionlist x theta))) theta
+ | occurcheck var x = Failure
+ | otherwise 
 
 getvariablefromsubstitutionlist :: Term -> MGU -> MGU
 getvariablefromsubstitutionlist var (List subs) = (List [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var])
 
 extractsecondterm :: Substitution -> Term
 extractsecondterm (Subst term1 term2) = term2
+
+occurcheck :: Term -> Term -> Bool
+occurcheck var@(Var _) (Fun function (firstarg:args)) = firstarg == var || occurcheck var (Fun function args)
+occurcheck _ _ = False
 
 --(\x (List subs) = [x | x <- subs, x == term1])
 --(\(Subst term1 term2) -> term2)
