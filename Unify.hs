@@ -28,14 +28,13 @@ unifyargslist _ _ _ = Failure
 unifyvariable :: Term -> Term -> MGU -> MGU
 unifyvariable _ _ Failure = Failure
 unifyvariable var@(Var _) x theta@(List subs)
- | [] /= getvariablefromsubstitutionlist var theta = unify (extractsecondterm (head (getvariablefromsubstitutionlist var theta))) x theta
- | [] /= getvariablefromsubstitutionlist x theta = unify var (extractsecondterm (head (getvariablefromsubstitutionlist x theta))) theta
+ | [] /= getsubstitutionlistcontainingvariable var theta = unify (extractsecondterm (head (getsubstitutionlistcontainingvariable var theta))) x theta
+ | [] /= getsubstitutionlistcontainingvariable x theta = unify var (extractsecondterm (head (getsubstitutionlistcontainingvariable x theta))) theta
  | occurcheck var x = Failure
  | otherwise = List (subs ++ [(Subst var x)])
 
-getvariablefromsubstitutionlist :: Term -> MGU -> [Substitution]
---getvariablefromsubstitutionlist var (List subs) = (List [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var])
-getvariablefromsubstitutionlist var (List subs) = [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var]
+getsubstitutionlistcontainingvariable :: Term -> MGU -> [Substitution]
+getsubstitutionlistcontainingvariable var (List subs) = [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var]
 
 extractsecondterm :: Substitution -> Term
 extractsecondterm (Subst term1 term2) = term2
