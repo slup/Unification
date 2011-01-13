@@ -1,3 +1,8 @@
+{--
+ - Werner Schwarz <schww1@bfh.ch>
+ - Florian Bühlmann <buhlf4@bfh.ch>
+ -}
+
 module Unify (Term(Var, Cst, Fun), MGU(Failure, List),
               Substitution(Subst), unify) where
 

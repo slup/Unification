@@ -1,3 +1,8 @@
+{--
+ - Werner Schwarz <schww1@bfh.ch>
+ - Florian Bühlmann <buhlf4@bfh.ch>
+ -}
+
 -- Module that allows a user to enter two terms.
 -- The two terms are parsed and unified if they are correct.
 -- The result (most general unifier) is then displayed.
@@ -15,13 +20,23 @@ extractTerm (a, b) = a
 -- Main function
 main :: IO()
 main =	do
-			putStrLn "Please enter term one:"
+			putStr "Term 1:"
 			t1 <- getLine
-			putStrLn "Please enter term two:"
+			putStr "Term 2:"
 			t2 <- getLine
 			
 			let x = extractTerm(fromJust(term t1))
 			let y = extractTerm(fromJust(term t2))
 			
-			putStrLn (show(unify x y (List [])))
+			let mgu = unify x y (List [])
+
+
+
+			putStrLn (show(head (getsubstitutionlist mgu)))
 			
+getsubstitutionlist :: MGU -> [Substitution]
+getsubstitutionlist (List subs) = [x | x <- subs] --, ((\(Subst term1 term2) -> Subst term1 term2) x)]
+getsubstitutionlist _ = []
+
+extractsecondterm :: Substitution -> Term
+extractsecondterm (Subst term1 term2) = term2
