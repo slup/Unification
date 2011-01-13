@@ -15,19 +15,19 @@ unify x y theta
   | x == y = theta
 unify x@(Var _) y theta = unifyvariable x y theta
 unify x y@(Var _) theta = unifyvariable y x theta
-unify (Fun x xs) (Fun y ys) theta = unifylist xs ys $ unify (Cst x) (Cst y) theta -- unify xs ys ( unify x y theta )
+unify (Fun x xs) (Fun y ys) theta = unifyargslist xs ys $ unify (Cst x) (Cst y) theta -- unify xs ys ( unify x y theta )
 --unify (x:xs) (y:ys) theta = unify xs ys $ unify x y theta -- unify xs ys ( unify x y theta )
 unify _ _ _ = Failure
 
-unifylist :: [Term] -> [Term] -> MGU -> MGU
-unifylist [] [] theta = theta
-unifylist (x:xs) (y:ys) theta = unifylist xs ys $ unify x y theta 
-unifylist _ _ _ = Failure
+unifyargslist :: [Term] -> [Term] -> MGU -> MGU
+unifyargslist [] [] theta = theta
+unifyargslist (x:xs) (y:ys) theta = unifyargslist xs ys $ unify x y theta 
+unifyargslist _ _ _ = Failure
 
 --               var       x     theta
 unifyvariable :: Term -> Term -> MGU -> MGU
 unifyvariable _ _ Failure = Failure
-unifyvariable var@(Var _) x theta@(List subs) =
+unifyvariable var@(Var _) x theta@(List subs) = 
 
 getvariablefromsubstitutionlist :: Term -> MGU -> MGU
 getvariablefromsubstitutionlist var (List subs) = (List [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var])
@@ -38,6 +38,16 @@ extractsecondterm (Subst term1 term2) = term2
 --(\x (List subs) = [x | x <- subs, x == term1])
 --(\(Subst term1 term2) -> term2)
 
+{--
+      UnifyVar(var, x, theta) returns a substitution
+        input var: a Variable,
+              x: any expression
+              theta: the substitutions build up so far
+        if {var/val} in theta then return Unify(val, x, theta)
+        else if {x/val} in theta then return Unify(var, val, theta)
+        else if OccurCheck(var, x) then return failure
+        else return add {var/x} to theta 
+--}
 
 {--
   Unify(x, y, theta) returns a substitution to make x and y identical
@@ -53,6 +63,8 @@ extractsecondterm (Subst term1 term2) = term2
     else if isList(x) and isList(y) then
       return Unify(Rest[x], Rest[y], Unify(First[x], First[y], theta))
     else return failure
+
+    In a Compound expression, such as F(A, B), the function OP picks out the function symbol and the function Args picks out the argument list (A,B). First takes the first element of an argument list and Rest takes the argument list without the first element.
 --}
 
 -- *** Add you code here
