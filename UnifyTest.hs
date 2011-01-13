@@ -7,7 +7,7 @@ import Test.HUnit
 import Unify
 
 test0 = TestCase $ assertEqual
-	"{Y/Apple, X/Kiwi}"
+	"{Y/apple, X/kiwi}"
 	(List [Subst (Var 'X') (Cst "kiwi"),Subst (Var 'Y') (Cst "apple")])
 	(unify 
 		(Fun "food" [Var 'X', Fun "fruit" [Cst "apple", Var 'X']]) 
@@ -17,6 +17,51 @@ test0 = TestCase $ assertEqual
 
 test1 = TestCase $ assertEqual
 	"Failure"
+	Failure
+	(unify
+		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
+		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		$ List []
+	)
+
+test2 = TestCase $ assertEqual
+	"UNIFY(Knows(John, X), Knows(John, Jane)) = {X/Jane}"
+	(List [Subst (Var 'X') (Cst "kiwi"),Subst (Var 'Y') (Cst "apple")])
+	(unify
+		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
+		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		$ List []
+	)
+
+test3 = TestCase $ assertEqual
+	"UNIFY(Knows(John, X), Knows(Y, Bill)) = {X/Bill, Y/John}"
+	(List [Subst (Var 'X') (Cst "kiwi"),Subst (Var 'Y') (Cst "apple")])
+	(unify
+		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
+		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		$ List []
+	)
+
+test4 = TestCase $ assertEqual
+	"UNIFY(Knows(John, X), Knows(Y, Mother(Y))) = {Y/John, X/Mother(John)}"
+	Failure
+	(unify
+		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
+		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		$ List []
+	)
+
+test5 = TestCase $ assertEqual
+	"UNIFY(Knows(John, X), Knows(X, Elizabeth)) = fail"
+	Failure
+	(unify
+		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
+		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		$ List []
+	)
+
+test6 = TestCase $ assertEqual
+	"UNIFY(Knows(John, X), Knows(Z, Elizabeth)) = {X/Elizabeth, Z/John}"
 	Failure
 	(unify
 		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
