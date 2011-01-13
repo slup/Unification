@@ -15,7 +15,7 @@ test0 = TestCase $ assertEqual
 		$ List []
 	)
 
-test2 = TestCase $ assertEqual
+test1 = TestCase $ assertEqual
 	"Failure"
 	Failure
 	(unify
@@ -25,5 +25,5 @@ test2 = TestCase $ assertEqual
 	)
 
 main = do
-	runTestTT $ TestList [test0] --test1, test2, test3, test4, test5]
+	runTestTT $ TestList [test0, test1] --, test2, test3, test4, test5]
 

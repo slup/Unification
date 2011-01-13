@@ -20,9 +20,9 @@ extractTerm (a, b) = a
 -- Main function
 main :: IO()
 main =	do
-			putStr "Term 1:"
+			putStr "Term 1: "
 			t1 <- getLine
-			putStr "Term 2:"
+			putStr "Term 2: "
 			t2 <- getLine
 			
 			let x = extractTerm(fromJust(term t1))
@@ -30,13 +30,17 @@ main =	do
 			
 			let mgu = unify x y (List [])
 
-
-
-			putStrLn (show(head (getsubstitutionlist mgu)))
+			putStrLn ("MGU   : {" ++ formatoutputstring (getsubstitutionlist mgu))
 			
 getsubstitutionlist :: MGU -> [Substitution]
 getsubstitutionlist (List subs) = [x | x <- subs] --, ((\(Subst term1 term2) -> Subst term1 term2) x)]
 getsubstitutionlist _ = []
 
-extractsecondterm :: Substitution -> Term
-extractsecondterm (Subst term1 term2) = term2
+formatoutputstring :: [Substitution] -> String
+formatoutputstring ((Subst term1 term2):[]) = substitutionformat term1 term2 ++ "}"  
+formatoutputstring ((Subst term1 term2):xs) = substitutionformat term1 term2 ++ ", " ++ formatoutputstring xs
+formatoutputstring _ = "(FormatFailure)"
+
+substitutionformat :: Term -> Term -> String
+substitutionformat term1@(Var var) term2@(Cst cst) = [var] ++ "/" ++ cst
+substitutionformat _ _ = "(SubstitutionFailure)"

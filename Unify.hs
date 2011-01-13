@@ -21,7 +21,6 @@ unify x y theta
 unify x@(Var _) y theta = unifyvariable x y theta
 unify x y@(Var _) theta = unifyvariable y x theta
 unify (Fun x xs) (Fun y ys) theta = unifyargslist xs ys $ unify (Cst x) (Cst y) theta -- unify xs ys ( unify x y theta )
---unify (x:xs) (y:ys) theta = unify xs ys $ unify x y theta -- unify xs ys ( unify x y theta )
 unify _ _ _ = Failure
 
 unifyargslist :: [Term] -> [Term] -> MGU -> MGU
