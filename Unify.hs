@@ -31,7 +31,7 @@ unifyvariable var@(Var _) x theta@(List subs)
  | [] /= getvariablefromsubstitutionlist var theta = unify (extractsecondterm (head (getvariablefromsubstitutionlist var theta))) x theta
  | [] /= getvariablefromsubstitutionlist x theta = unify var (extractsecondterm (head (getvariablefromsubstitutionlist x theta))) theta
  | occurcheck var x = Failure
- | otherwise 
+ | otherwise = List (subs ++ [(Subst var x)])
 
 getvariablefromsubstitutionlist :: Term -> MGU -> MGU
 getvariablefromsubstitutionlist var (List subs) = (List [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var])
