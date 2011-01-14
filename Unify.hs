@@ -31,6 +31,7 @@ unifyargslist _ _ _ = Failure
 --               var       x     theta
 unifyvariable :: Term -> Term -> MGU -> MGU
 unifyvariable _ _ Failure = Failure
+unifyvariable var@(Var _) x@(Fun f args) theta@(List subs) = List (subs ++ [(Subst var (Fun f (substitutefunctionargs args theta)))])
 unifyvariable var@(Var _) x theta@(List subs)
  | [] /= getsubstitutionlistcontaining var theta = unify (extractsecondterm (head (getsubstitutionlistcontaining var theta))) x theta
  | [] /= getsubstitutionlistcontaining x theta = unify var (extractsecondterm (head (getsubstitutionlistcontaining x theta))) theta
@@ -38,6 +39,8 @@ unifyvariable var@(Var _) x theta@(List subs)
  | otherwise = List (subs ++ [(Subst var x)])
 
 getsubstitutionlistcontaining :: Term -> MGU -> [Substitution]
+--getsubstitutionlistcontaining var@(Fun f args) (List subs) = [x | x <- subs, y <- args, ((\(Subst term1 term2) -> term1) x) == y]
+--getsubstitutionlistcontaining var@(Fun f args) (List subs) = [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var]
 getsubstitutionlistcontaining var (List subs) = [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var]
 
 extractsecondterm :: Substitution -> Term
@@ -46,6 +49,9 @@ extractsecondterm (Subst term1 term2) = term2
 occurcheck :: Term -> Term -> Bool
 occurcheck var@(Var _) (Fun function (firstarg:args)) = firstarg == var || occurcheck var (Fun function args)
 occurcheck _ _ = False
+
+substitutefunctionargs :: [Term] -> MGU ->  [Term]
+substitutefunctionargs args (List subs) = [(extractsecondterm x) | x <- subs, y <- args, ((\(Subst term1 term2) -> term1) x) == y]
 
 --(\x (List subs) = [x | x <- subs, x == term1])
 --(\(Subst term1 term2) -> term2)

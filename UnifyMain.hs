@@ -31,8 +31,8 @@ main =	do
 			let mgu = unify x y (List [])
 
 			-- for plain List output: putStrLn (show (mgu))
-
-			putStrLn ("MGU   : {" ++ formatoutputstring (getsubstitutionlist mgu))
+			putStrLn (show (mgu))
+			--putStrLn ("MGU   : {" ++ formatoutputstring (getsubstitutionlist mgu))
 			
 getsubstitutionlist :: MGU -> [Substitution]
 getsubstitutionlist (List subs) = [x | x <- subs] --, ((\(Subst term1 term2) -> Subst term1 term2) x)]
@@ -45,9 +45,9 @@ formatoutputstring _ = "(FormatFailure)"
 
 substitutionformat :: Term -> Term -> String
 substitutionformat term1@(Var var) term2@(Cst cst) = [var] ++ "/" ++ cst
-substitutionformat term1@(Fun funcname1 [args1]) term2@(Fun funcname2 [args2]) = [var] ++ "/" ++ cst -- replace with singletermformat
-substitutionformat term1@(Fun fun) term2 = [var] ++ "/" ++ cst -- replace with singletermformat
-substitutionformat term1 term2@(Fun fun) = [var] ++ "/" ++ cst -- replace with singletermformat
+--substitutionformat term1@(Fun funcname1 [args1]) term2@(Fun funcname2 [args2]) = [var] ++ "/" ++ cst -- replace with singletermformat
+--substitutionformat term1@(Fun fun) term2 = [var] ++ "/" ++ cst -- replace with singletermformat
+--substitutionformat term1 term2@(Fun fun) = [var] ++ "/" ++ cst -- replace with singletermformat
 substitutionformat _ _ = "(SubstitutionFailure or nested Function)"
 
 {--
