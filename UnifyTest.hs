@@ -19,35 +19,35 @@ test1 = TestCase $ assertEqual
 	"Failure"
 	Failure
 	(unify
-		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
-		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		(Fun "weather" [Fun "mix" [Cst "Rain", Var 'X'], Var 'X'])
+		(Fun "weather" [Fun "mix" [Var 'X', Var 'Y'], Cst "Snow"])
 		$ List []
 	)
 
 test2 = TestCase $ assertEqual
 	"UNIFY(Knows(John, X), Knows(John, Jane)) = {X/Jane}"
-	(List [Subst (Var 'X') (Cst "kiwi"),Subst (Var 'Y') (Cst "apple")])
+	(List [Subst (Var 'X') (Cst "Jane")])
 	(unify
-		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
-		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		(Fun "Knows" [Cst "John", Var 'X'])
+		(Fun "Knows" [Cst "John", Cst "Jane"])
 		$ List []
 	)
 
 test3 = TestCase $ assertEqual
 	"UNIFY(Knows(John, X), Knows(Y, Bill)) = {X/Bill, Y/John}"
-	(List [Subst (Var 'X') (Cst "kiwi"),Subst (Var 'Y') (Cst "apple")])
+	(List [Subst (Var 'Y') (Cst "John"), Subst (Var 'X') (Cst "Bill")])
 	(unify
-		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
-		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		(Fun "Knows" [Cst "John", Var 'X'])
+		(Fun "Knows" [Var 'Y', Cst "Bill"])
 		$ List []
 	)
 
 test4 = TestCase $ assertEqual
 	"UNIFY(Knows(John, X), Knows(Y, Mother(Y))) = {Y/John, X/Mother(John)}"
-	Failure
+	(List [Subst (Var 'Y') (Cst "John"),Subst (Var 'X') (Fun "Mother" [(Cst "John")])])
 	(unify
-		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
-		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		(Fun "Knows" [Cst "John", Var 'X'])
+		(Fun "Knows" [Var 'Y', (Fun "Mother" [Var 'Y'])])
 		$ List []
 	)
 
@@ -55,20 +55,20 @@ test5 = TestCase $ assertEqual
 	"UNIFY(Knows(John, X), Knows(X, Elizabeth)) = fail"
 	Failure
 	(unify
-		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
-		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		(Fun "Knows" [Cst "John", Var 'X'])
+		(Fun "Knows" [Var 'X', Cst "Elizabeth"])
 		$ List []
 	)
 
 test6 = TestCase $ assertEqual
 	"UNIFY(Knows(John, X), Knows(Z, Elizabeth)) = {X/Elizabeth, Z/John}"
-	Failure
+	(List [Subst (Var 'Z') (Cst "John"), Subst (Var 'X') (Cst "Elizabeth")])
 	(unify
-		(Fun "food" [Fun "fruit" [Cst "Limette", Var 'X'], Var 'X'])
-		(Fun "food" [Fun "fruit" [Var 'X', Var 'Y'], Cst "Rohrzucker"])
+		(Fun "Knows" [Cst "John", Var 'X'])
+		(Fun "Knows" [Var 'Z', Cst "Elizabeth"])
 		$ List []
 	)
 
 main = do
-	runTestTT $ TestList [test0, test1] --, test2, test3, test4, test5]
+	runTestTT $ TestList [test0, test1, test2, test3, test4, test5, test6]
 

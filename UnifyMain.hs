@@ -30,6 +30,8 @@ main =	do
 			
 			let mgu = unify x y (List [])
 
+			-- for plain List output: putStrLn (show (mgu))
+
 			putStrLn ("MGU   : {" ++ formatoutputstring (getsubstitutionlist mgu))
 			
 getsubstitutionlist :: MGU -> [Substitution]
@@ -46,8 +48,10 @@ substitutionformat term1@(Var var) term2@(Cst cst) = [var] ++ "/" ++ cst
 substitutionformat term1@(Fun funcname1 [args1]) term2@(Fun funcname2 [args2]) = [var] ++ "/" ++ cst -- replace with singletermformat
 substitutionformat term1@(Fun fun) term2 = [var] ++ "/" ++ cst -- replace with singletermformat
 substitutionformat term1 term2@(Fun fun) = [var] ++ "/" ++ cst -- replace with singletermformat
-substitutionformat _ _ = "(SubstitutionFailure)"
+substitutionformat _ _ = "(SubstitutionFailure or nested Function)"
 
+{--
+ideas for better/complete output formating
 singletermformat :: Term -> String
 singletermformat term1@(Var var) = [var]
 singletermformat term1@(Cst cst) = cst
@@ -61,3 +65,4 @@ multipletermsformat x@(Cst cst):[] = cst
 multipletermsformat x@(Cst cst):xs = cst ++ "," ++ multipletermsformat xs
 multipletermsformat x@(Fun funcname1 arg:args):[] = singletermformat arg ++ multipletermsformat args
 multipletermsformat x@(Fun funcname1 arg:args):xs = singletermformat arg ++ multipletermsformat args ++ multipletermsformat xs
+--}
