@@ -39,8 +39,6 @@ unifyvariable var@(Var _) x theta@(List subs)
  | otherwise = List (subs ++ [(Subst var x)])
 
 getsubstitutionlistcontaining :: Term -> MGU -> [Substitution]
---getsubstitutionlistcontaining var@(Fun f args) (List subs) = [x | x <- subs, y <- args, ((\(Subst term1 term2) -> term1) x) == y]
---getsubstitutionlistcontaining var@(Fun f args) (List subs) = [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var]
 getsubstitutionlistcontaining var (List subs) = [x | x <- subs, ((\(Subst term1 term2) -> term1) x) == var]
 
 extractsecondterm :: Substitution -> Term
@@ -52,9 +50,6 @@ occurcheck _ _ = False
 
 substitutefunctionargs :: [Term] -> MGU ->  [Term]
 substitutefunctionargs args (List subs) = [(extractsecondterm x) | x <- subs, y <- args, ((\(Subst term1 term2) -> term1) x) == y]
-
---(\x (List subs) = [x | x <- subs, x == term1])
---(\(Subst term1 term2) -> term2)
 
 {--
       UnifyVar(var, x, theta) returns a substitution
@@ -84,5 +79,3 @@ substitutefunctionargs args (List subs) = [(extractsecondterm x) | x <- subs, y 
 
     In a Compound expression, such as F(A, B), the function OP picks out the function symbol and the function Args picks out the argument list (A,B). First takes the first element of an argument list and Rest takes the argument list without the first element.
 --}
-
--- *** Add you code here

@@ -31,8 +31,8 @@ main =	do
 			let mgu = unify x y (List [])
 
 			-- for plain List output: putStrLn (show (mgu))
-			putStrLn (show (mgu))
-			--putStrLn ("MGU   : {" ++ formatoutputstring (getsubstitutionlist mgu))
+			putStrLn ("Raw Output: " ++ show (mgu))
+			putStrLn ("MGU   : {" ++ formatoutputstring (getsubstitutionlist mgu))
 			
 getsubstitutionlist :: MGU -> [Substitution]
 getsubstitutionlist (List subs) = [x | x <- subs] --, ((\(Subst term1 term2) -> Subst term1 term2) x)]
@@ -41,28 +41,15 @@ getsubstitutionlist _ = []
 formatoutputstring :: [Substitution] -> String
 formatoutputstring ((Subst term1 term2):[]) = substitutionformat term1 term2 ++ "}"  
 formatoutputstring ((Subst term1 term2):xs) = substitutionformat term1 term2 ++ ", " ++ formatoutputstring xs
-formatoutputstring _ = "(FormatFailure)"
+formatoutputstring _ = "(FormatOutputStringFailure)"
 
 substitutionformat :: Term -> Term -> String
 substitutionformat term1@(Var var) term2@(Cst cst) = [var] ++ "/" ++ cst
---substitutionformat term1@(Fun funcname1 [args1]) term2@(Fun funcname2 [args2]) = [var] ++ "/" ++ cst -- replace with singletermformat
---substitutionformat term1@(Fun fun) term2 = [var] ++ "/" ++ cst -- replace with singletermformat
---substitutionformat term1 term2@(Fun fun) = [var] ++ "/" ++ cst -- replace with singletermformat
-substitutionformat _ _ = "(SubstitutionFailure or nested Function)"
+substitutionformat term1@(Var var) term2@(Fun f args) = [var] ++ "/" ++ f ++ "(" ++ (formatfunctionargs args) ++")"
+substitutionformat _ _ = "(SubstitutionFormatFailure)"
 
-{--
-ideas for better/complete output formating
-singletermformat :: Term -> String
-singletermformat term1@(Var var) = [var]
-singletermformat term1@(Cst cst) = cst
-singletermformat term1@(Fun funcname1 arg:args) = funcname1 ++ "(" ++ singletermformat arg ++ (multipletermsformat args) ++ ")"
-
-multipletermsformat :: [Term] -> String
-multipletermsformat [] = ""
-multipletermsformat x@(Var var):[] = [var]
-multipletermsformat x@(Var var):xs = [var] ++ "," ++ multipletermsformat xs
-multipletermsformat x@(Cst cst):[] = cst
-multipletermsformat x@(Cst cst):xs = cst ++ "," ++ multipletermsformat xs
-multipletermsformat x@(Fun funcname1 arg:args):[] = singletermformat arg ++ multipletermsformat args
-multipletermsformat x@(Fun funcname1 arg:args):xs = singletermformat arg ++ multipletermsformat args ++ multipletermsformat xs
---}
+formatfunctionargs :: [Term] -> String
+formatfunctionargs (arg@(Var var):[]) = [var]
+formatfunctionargs (arg@(Cst cst):[]) = cst
+formatfunctionargs (arg@(Var var):args) = [var] ++ "," ++ (formatfunctionargs args)
+formatfunctionargs (arg@(Cst cst):args) = cst ++ "," ++ (formatfunctionargs args)
